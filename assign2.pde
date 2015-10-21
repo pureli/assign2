@@ -89,7 +89,7 @@ void draw(){
     //blood
     noStroke();
     fill(255,0,0);
-    rect(33,15,x4*1.9,15);//blood bar
+    rect(33,15,x4*1.8,15);//blood bar
     image(bloodImg,20,10);
     
     //enemy
