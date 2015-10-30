@@ -1,22 +1,13 @@
-PImage background1Img;
-PImage background2Img;
-PImage fighterImg;
-PImage treasureImg;
-PImage bloodImg;
-PImage enemyImg;
-PImage start1Img;
-PImage start2Img;
-PImage end1Img;
-PImage end2Img;
+PImage background1Img,background2Img,fighterImg,treasureImg,bloodImg,
+enemyImg,start1Img,start2Img,end1Img,end2Img;
+
 int x1;
 int x2;
-int x3;//treasure
-int y3;//treasure
+int x3,y3;//treasure
 int x4;//blood
 int x5;//enemy
 float y5;//enemy
-int x6;//fighter
-int y6;//fighter
+int x6,y6;//fighter
 int fighterSpeed = 5;
 float enemySpeed = floor(random(-8,8));
 int gameState;
@@ -48,7 +39,7 @@ void setup(){
   x2 = 0;
   x3 = floor(random(500));  
   y3 = floor(random(400));
-  x4 = 36;
+  x4 = 20;
   x5 = 0;
   y5 = floor(random(400));
   x6 = 580;
@@ -81,7 +72,7 @@ void draw(){
     x2 = x2%1280;
       
     //fighter
-    image(fighterImg,x6,y6);
+    image(fighterImg,x6-fighterImg.width*0.5,y6-fighterImg.height*0.5);
       
     //treasure
     image(treasureImg,x3,y3);
@@ -89,11 +80,11 @@ void draw(){
     //blood
     noStroke();
     fill(255,0,0);
-    rect(33,15,x4*1.8,15);//blood bar
+    rect(33,15,x4*1.94,15);//blood bar
     image(bloodImg,20,10);
     
     //enemy
-    image(enemyImg,x5-61,y5);
+    image(enemyImg,x5,y5);
     x5 = x5+5;
     
     //scrollBack
@@ -103,13 +94,17 @@ void draw(){
       y5 = floor(random(480));
      }
       
-     //enemy curve move
+     //enemy follow fighter
      y5 = y5+enemySpeed;
-     if(y5 > height*0.5){
+     if(y5>y6){
        enemySpeed = enemySpeed-0.05;
-      }else{
-        enemySpeed = enemySpeed+0.05;
-     }
+       y5-= 2;
+       }
+
+     if(y5<y6){
+       enemySpeed = enemySpeed+0.05;
+       y5+= 2;
+       }
         
       //fighter position
       if(fighterUpPressed){
@@ -134,30 +129,29 @@ void draw(){
       }
     
     //fighter meet enemy
-    int fighterCenterPointX = (int)(x6 + fighterImg.width * 0.5);
-    int fighterCenterPointY = (int)(y6 + fighterImg.height * 0.5);
-    //ellipse( fighterCenterPointX, fighterCenterPointY, 20, 20 );
-    //rect( x5-61, y5, enemyImg.width, enemyImg.height );
-    
-      if( fighterCenterPointX > x5-61 &&  fighterCenterPointX < x5 + enemyImg.width -61 ){
-        if( fighterCenterPointY > y5 && fighterCenterPointY < y5+enemyImg.height){
-           x4= x4-20;
-           x5 = 0;
-           y5 = floor(random(400));
-        }
+    int enemyDistX = x6-x5;
+    float enemyDistY = y6-y5;
+    int enemyDist = (int)sqrt(enemyDistX*enemyDistX+enemyDistY*enemyDistY);
+
+    if(enemyDist <= enemyImg.width*0.5+fighterImg.width*0.5){    
+        x4= x4-20;
+        x5 = 0;
+        y5 = floor(random(400));
+    }
+
+
+
+    //fighter meet treasure
+    int treasureDistX = x6-x3;
+    int treasureDistY = y6-y3;
+    int treasureDist = (int)sqrt(treasureDistX*treasureDistX+treasureDistY*treasureDistY);
+    if(treasureDist <= fighterImg.width*0.5+treasureImg.width*0.5){
+      if(x4 < 100){  
+        x4= x4+10;
       }
-        
-  //fighter meet treasure
-      if( fighterCenterPointX > x3 &&  fighterCenterPointX < x3 + enemyImg.width  ){
-        if( fighterCenterPointY > y3 && fighterCenterPointY < y3+enemyImg.height){
-          x3 = floor(random(500));  
-          y3 = floor(random(400));
-                  
-          if(x4<100){
-            x4= x4+10;
-          }
-        }
-       }
+        x3 = floor(random(400));
+        y3 = floor(random(400));
+    }
         
   }//state=1 condition end   
   
